@@ -34,6 +34,15 @@ npm run dev
 
 The app starts at [http://localhost:3000](http://localhost:3000).
 
+### Widget Styles
+
+Import the widget stylesheet in your `_app.tsx` (or equivalent app entry point):
+
+```tsx
+import '@aori/mega-swap-widget/styles.css';
+```
+
+Without this import the widget will render unstyled.
 
 ## Server-Side Proxying
 
@@ -168,25 +177,55 @@ settings: {
 
 ## Wagmi Configuration
 
-The wagmi config in `src/wagmi.ts` uses helper exports from the widget package:
+The wagmi config in `src/wagmi.ts` uses two helper exports from the widget package:
 
 - **`wagmiChains`** — all Aori-supported chains, pre-configured. Your wagmi config must include all of these or approvals, wrapping/unwrapping, and chain switching will fail silently.
-- **`buildTransports()`** — provides RPC transports with built-in fallback (multiple public RPCs per chain, tried in order on error or rate-limit).
+- **`buildTransports(overrides?)`** — creates RPC transports for every supported chain, with built-in fallback (multiple public RPCs per chain, tried in order on error or rate-limit).
+
+### How RPC calls work
+
+The widget makes RPC calls through **two independent paths**:
+
+| Path | Configured by | Used for |
+| --- | --- | --- |
+| **Widget internal** | `rpcOverrides` in `aori.config.ts` | Balance fetching, quote pricing |
+| **Wagmi** | `buildTransports()` in `wagmi.ts` | Signing txs, sending txs, chain switching |
+
+These paths are configured independently — setting `rpcOverrides` in your widget config does **not** automatically apply to wagmi. To route wagmi's RPC calls through the same proxy, pass the overrides to `buildTransports(aoriConfig.rpcOverrides)` as shown below.
+
+### Without overrides (public RPCs, client-side)
+
+```ts
+transports: buildTransports(),
+```
+
+When called with no arguments, `buildTransports()` uses the widget's built-in public RPC URLs. These are hardcoded in the bundle and sent directly from the user's browser — anyone inspecting network traffic or the JS bundle can see them. This is fine for development or if you don't care about RPC privacy on the wagmi side.
+
+### With overrides (proxied, server-side)
+
+```ts
+import { aoriConfig } from '../aori.config';
+
+transports: buildTransports(aoriConfig.rpcOverrides),
+```
+
+When you pass the same `rpcOverrides` from your widget config, wagmi's RPC calls also go through your `/api/rpc/[chainId]` proxy. The real RPC URLs stay server-side. **This is the recommended setup for production** — it ensures all RPC traffic (both widget-internal and wagmi) flows through your proxy.
+
+### Full example
 
 ```ts
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { wagmiChains, buildTransports } from '@aori/mega-swap-widget';
+import { aoriConfig } from '../aori.config';
 
 const wagmiConfig = getDefaultConfig({
   appName: 'MegaETH Example',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   chains: wagmiChains,
-  transports: buildTransports(),
+  transports: buildTransports(aoriConfig.rpcOverrides),
   ssr: false,
 });
 ```
-
-Note that wagmi transports are separate from the widget's `rpcOverrides`. The `rpcOverrides` affect the widget's internal viem clients, while `buildTransports()` configures wagmi for signing and sending transactions. Any URLs passed to `buildTransports` are client-side JavaScript — never pass private RPC URLs directly.
 
 ## Scripts
 
