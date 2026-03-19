@@ -2,7 +2,7 @@ import type { AoriSwapWidgetConfig } from '@aori/mega-swap-widget';
 
 export const aoriConfig: AoriSwapWidgetConfig = {
   vtApiBaseUrl: '/api/vt',
-  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  walletConnectProjectId: '3ce48d5c2eb47bf61eef12ecad07e542',
   rpcOverrides: {
     1: '/api/rpc/1',
     10: '/api/rpc/10',
@@ -81,7 +81,7 @@ export const aoriConfig: AoriSwapWidgetConfig = {
     },
     defaultQuote: {
       chainId: 4326,
-      address: '0xfafddbb3fc7688494971a79cc65dca3ef82079e7',
+      address: '0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7',
     },
     supportedInputTokens: [
       { chainId: 1, address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },     // USDC Ethereum
@@ -95,7 +95,7 @@ export const aoriConfig: AoriSwapWidgetConfig = {
       { chainId: 42161, address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' }, // USDT0 Arbitrum
     ],
     supportedOutputTokens: [
-      { chainId: 4326, address: '0xfafddbb3fc7688494971a79cc65dca3ef82079e7' }, // USDC MegaETH
+      { chainId: 4326, address: '0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7' }, // USDM MegaETH
     ],
     supportedInputChains: [1, 10, 143, 8453, 42161],
     supportedOutputChains: [4326],
@@ -103,7 +103,7 @@ export const aoriConfig: AoriSwapWidgetConfig = {
     outputSelectionSearch: false,
     showInputSelectionTokenBalances: true,
     showOutputSelectionTokenBalances: false,
-    enabledChains: [1, 10, 56, 143, 4326, 8453, 42161],
+    enabledChains: [1, 10, 143, 4326, 8453, 42161],
     lockBase: false,
     lockQuote: false,
     disableInverting: false,
