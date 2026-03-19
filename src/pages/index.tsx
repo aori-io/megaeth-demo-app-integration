@@ -14,7 +14,7 @@ const Home: NextPage = () => {
         <ConnectButton chainStatus="none" showBalance={false} />
       </div>
       <div id="widget-container" className="w-full flex-1 flex justify-center items-center">
-        <div className="w-28rem flex justify-center items-center border border-white">
+        <div className="w-md flex justify-center items-center border border-white">
         <SwapWidget 
           config={aoriConfig}
           customWalletUI="provider"
