@@ -19,7 +19,14 @@ const Home: NextPage = () => {
           config={aoriConfig}
           customWalletUI="provider"
           onRequestConnect={() => openConnectModal?.()}
-          onRequestAccount={() => openAccountModal?.()} 
+          onRequestAccount={() => openAccountModal?.()}
+          onSwapComplete={({ aoriOrderHash, explorerUrl, details }) => {
+            console.log('[SwapComplete] Order settled on-chain');
+            console.log('  Order hash:', aoriOrderHash);
+            console.log('  Explorer:', explorerUrl);
+            console.log('  Details:', details);
+            console.log('  Events:', details.events);
+          }}
         />
         </div>
       </div>
