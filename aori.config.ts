@@ -1,5 +1,8 @@
 import type { AoriSwapWidgetConfig } from '@aori/mega-swap-widget';
 
+// add wallets to test blacklist
+// const hardcoded = ['0x26da...', '0x607a...'];
+
 export const aoriConfig: AoriSwapWidgetConfig = {
   vtApiBaseUrl: '/api/vt',
   walletConnectProjectId: '3ce48d5c2eb47bf61eef12ecad07e542',
@@ -118,6 +121,23 @@ export const aoriConfig: AoriSwapWidgetConfig = {
     fillContainer: true,
     hideBorder: true,
     walletButtonEnabled: true
+  },
+  walletScreening: {
+    enabled: true,
+    useChainalysisOracle: true,
+    screeningUrl: '/api/screening',
+    blacklist: async (address: string) => {
+      const res = await fetch(`/api/blacklist?address=${address}`);
+      const data = await res.json();
+      return data.blocked;
+    },
+    // for hardcoded blacklist + datasource 
+    // blacklist: async (address) => {
+    //   if (hardcoded.some((a) => a.toLowerCase() === address.toLowerCase())) return true;
+    //   const res = await fetch(`/api/blacklist?address=${address}`);
+    //   const data = await res.json();
+    //   return data.blocked;
+    // },
   },
   settings: {
     defaultSlippage: 0.01
