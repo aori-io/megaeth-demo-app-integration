@@ -6,8 +6,10 @@ import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { WalletScreeningProvider } from '@aori/mega-swap-widget';
 
 import { config } from '../wagmi';
+import { aoriConfig } from '../../aori.config';
 
 const client = new QueryClient();
 
@@ -16,7 +18,16 @@ function MyApp({ Component, pageProps }: AppProps) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={client}>
         <RainbowKitProvider>
-          <Component {...pageProps} />
+          <WalletScreeningProvider
+            config={aoriConfig.walletScreening}
+            onBlockedWallet={({ address, allowed, source }) => {
+              if (!allowed) {
+                console.warn(`Blocked wallet: ${address} (flagged by ${source})`);
+              }
+            }}
+          >
+            <Component {...pageProps} />
+          </WalletScreeningProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
